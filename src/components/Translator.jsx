@@ -7,6 +7,8 @@ function Translator() {
   const [cameraStarted, setCameraStarted] = useState(false);
   const [cameraError, setCameraError] = useState("");
 
+  const [mode, setMode] = useState("sign-to-text");
+
   const [detectedSign, setDetectedSign] = useState("—");
   const [translation, setTranslation] = useState("—");
   const [status, setStatus] = useState(
@@ -39,7 +41,6 @@ function Translator() {
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-
         await videoRef.current.play();
       }
 
@@ -93,9 +94,7 @@ function Translator() {
     <section className="translator-section" id="translator">
       <div className="translator-container">
 
-        {/* =========================
-            TRANSLATOR HEADER
-        ========================== */}
+        {/* TRANSLATOR HEADER */}
         <div className="translator-header">
           <p className="eyebrow">SIGNBRIDGE-AI TRANSLATOR</p>
 
@@ -105,188 +104,256 @@ function Translator() {
           </h2>
 
           <p>
-            Use your camera to capture sign language and translate it
-            into understandable text.
+            Choose a communication direction and use SignBridge-AI
+            to make communication easier.
           </p>
+
+          {/* TRANSLATION MODES */}
+          <div className="translator-modes">
+            <button
+              type="button"
+              className={`translator-mode ${
+                mode === "sign-to-text" ? "active" : ""
+              }`}
+              onClick={() => setMode("sign-to-text")}
+            >
+              🤟 Sign → Text
+            </button>
+
+            <button
+              type="button"
+              className={`translator-mode ${
+                mode === "text-to-sign" ? "active" : ""
+              }`}
+              onClick={() => setMode("text-to-sign")}
+            >
+              📝 Text → Sign
+            </button>
+
+            <button
+              type="button"
+              className={`translator-mode ${
+                mode === "speech-to-sign" ? "active" : ""
+              }`}
+              onClick={() => setMode("speech-to-sign")}
+            >
+              🎤 Speech → Sign
+            </button>
+          </div>
         </div>
 
-        {/* =========================
-            TRANSLATOR GRID
-        ========================== */}
-        <div className="translator-grid">
+        {/* CURRENT MODE */}
+        {mode === "sign-to-text" && (
+          <div className="translator-grid">
 
-          {/* =========================
-              CAMERA CARD
-          ========================== */}
-          <div className="translator-card camera-card">
+            {/* CAMERA CARD */}
+            <div className="translator-card camera-card">
+              <div className="translator-card-header">
+                <div>
+                  <span className="card-label">CAMERA</span>
+                  <h3>Camera Preview</h3>
+                </div>
 
-            <div className="translator-card-header">
-              <div>
-                <span className="card-label">CAMERA</span>
-
-                <h3>Camera Preview</h3>
+                <div
+                  className={`camera-status ${
+                    cameraStarted ? "active" : ""
+                  }`}
+                >
+                  <span></span>
+                  {cameraStarted ? "LIVE" : "READY"}
+                </div>
               </div>
 
-              <div
-                className={`camera-status ${
-                  cameraStarted ? "active" : ""
-                }`}
-              >
-                <span></span>
+              {/* CAMERA */}
+              <div className="camera-box">
+                {!cameraStarted && (
+                  <div className="camera-placeholder">
+                    <div className="camera-placeholder-icon">
+                      📷
+                    </div>
 
-                {cameraStarted ? "LIVE" : "READY"}
-              </div>
-            </div>
+                    <h4>Camera Preview</h4>
 
-            {/* CAMERA */}
-            <div className="camera-box">
-              {!cameraStarted && (
-                <div className="camera-placeholder">
-                  <div className="camera-placeholder-icon">
-                    📷
+                    <p>
+                      Your camera feed will appear here.
+                    </p>
                   </div>
+                )}
 
-                  <h4>Camera Preview</h4>
+                <video
+                  ref={videoRef}
+                  className={`camera-video ${
+                    cameraStarted ? "visible" : ""
+                  }`}
+                  autoPlay
+                  playsInline
+                  muted
+                />
 
-                  <p>
-                    Your camera feed will appear here.
-                  </p>
+                {cameraStarted && (
+                  <div className="camera-overlay">
+                    <div className="corner top-left"></div>
+                    <div className="corner top-right"></div>
+                    <div className="corner bottom-left"></div>
+                    <div className="corner bottom-right"></div>
+
+                    <div className="detection-line"></div>
+
+                    <div className="camera-overlay-text">
+                      🤖 AI detection active
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* CAMERA ERROR */}
+              {cameraError && (
+                <div className="camera-error">
+                  <span>⚠️</span>
+                  <p>{cameraError}</p>
                 </div>
               )}
 
-              <video
-                ref={videoRef}
-                className={`camera-video ${
-                  cameraStarted ? "visible" : ""
-                }`}
-                autoPlay
-                playsInline
-                muted
-              />
-
-              {cameraStarted && (
-                <div className="camera-overlay">
-                  <div className="corner top-left"></div>
-                  <div className="corner top-right"></div>
-                  <div className="corner bottom-left"></div>
-                  <div className="corner bottom-right"></div>
-
-                  <div className="detection-line"></div>
-
-                  <div className="camera-overlay-text">
-                    🤖 AI detection active
-                  </div>
-                </div>
-              )}
+              {/* CAMERA BUTTON */}
+              <div className="camera-controls">
+                {!cameraStarted ? (
+                  <button
+                    type="button"
+                    className="camera-button"
+                    onClick={startCamera}
+                  >
+                    <span>📷</span>
+                    Start Camera
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="camera-button stop"
+                    onClick={stopCamera}
+                  >
+                    <span>⏹</span>
+                    Stop Camera
+                  </button>
+                )}
+              </div>
             </div>
 
-            {/* CAMERA ERROR */}
-            {cameraError && (
-              <div className="camera-error">
-                <span>⚠️</span>
+            {/* TRANSLATION CARD */}
+            <div className="translator-card translation-card">
+              <div className="translator-card-header">
+                <div>
+                  <span className="card-label">AI TRANSLATION</span>
+                  <h3>Translation</h3>
+                </div>
 
-                <p>{cameraError}</p>
+                <span className="ai-icon">🤖</span>
               </div>
-            )}
 
-            {/* BUTTON */}
-            <div className="camera-controls">
-              {!cameraStarted ? (
-                <button
-                  className="camera-button"
-                  onClick={startCamera}
-                >
-                  <span>📷</span>
-                  Start Camera
-                </button>
-              ) : (
-                <button
-                  className="camera-button stop"
-                  onClick={stopCamera}
-                >
-                  <span>⏹</span>
-                  Stop Camera
-                </button>
-              )}
+              <p className="translation-description">
+                Your detected sign will appear here.
+              </p>
+
+              {/* DETECTED SIGN */}
+              <div className="result-box">
+                <div className="result-header">
+                  <span>Detected Sign</span>
+                  <span className="result-icon">🤟</span>
+                </div>
+
+                <strong className="result-value">
+                  {detectedSign}
+                </strong>
+              </div>
+
+              {/* AI STATUS */}
+              <div className="result-box ai-result">
+                <div className="result-header">
+                  <span>AI Recognition</span>
+                  <span className="pulse-dot"></span>
+                </div>
+
+                <strong className="result-status">
+                  {cameraStarted
+                    ? "Analyzing camera..."
+                    : "Waiting for camera"}
+                </strong>
+              </div>
+
+              {/* TRANSLATION */}
+              <div className="result-box">
+                <div className="result-header">
+                  <span>Translation</span>
+                  <span className="result-icon">💬</span>
+                </div>
+
+                <strong className="result-value">
+                  {translation}
+                </strong>
+              </div>
+
+              {/* STATUS */}
+              <div className="translation-status">
+                <span
+                  className={`status-dot ${
+                    cameraStarted ? "active" : ""
+                  }`}
+                ></span>
+
+                <span>{status}</span>
+              </div>
             </div>
           </div>
+        )}
 
-          {/* =========================
-              TRANSLATION CARD
-          ========================== */}
-          <div className="translator-card translation-card">
-
-            <div className="translator-card-header">
+        {/* TEXT TO SIGN */}
+        {mode === "text-to-sign" && (
+          <div className="direction-card">
+            <div className="direction-card-header">
               <div>
-                <span className="card-label">AI TRANSLATION</span>
-
-                <h3>Translation</h3>
+                <span className="card-label">TEXT INPUT</span>
+                <h3>Text → Sign Language</h3>
               </div>
 
-              <span className="ai-icon">🤖</span>
+              <span className="direction-icon">📝</span>
             </div>
 
-            <p className="translation-description">
-              Your detected sign will appear here.
+            <p className="direction-description">
+              Enter text that can later be converted into
+              sign-language representation.
             </p>
 
-            {/* DETECTED SIGN */}
-            <div className="result-box">
-              <div className="result-header">
-                <span>Detected Sign</span>
-
-                <span className="result-icon">🤟</span>
-              </div>
-
-              <strong className="result-value">
-                {detectedSign}
-              </strong>
-            </div>
-
-            {/* AI STATUS */}
-            <div className="result-box ai-result">
-              <div className="result-header">
-                <span>AI Recognition</span>
-
-                <span className="pulse-dot"></span>
-              </div>
-
-              <strong className="result-status">
-                {cameraStarted
-                  ? "Analyzing camera..."
-                  : "Waiting for camera"}
-              </strong>
-            </div>
-
-            {/* TRANSLATION */}
-            <div className="result-box">
-              <div className="result-header">
-                <span>Translation</span>
-
-                <span className="result-icon">💬</span>
-              </div>
-
-              <strong className="result-value">
-                {translation}
-              </strong>
-            </div>
-
-            {/* STATUS */}
-            <div className="translation-status">
-              <span
-                className={`status-dot ${
-                  cameraStarted ? "active" : ""
-                }`}
-              ></span>
-
-              <span>{status}</span>
+            <div className="demo-note">
+              🚧 Text-to-sign AI integration will be connected
+              here in the next step.
             </div>
           </div>
-        </div>
+        )}
 
-        {/* =========================
-            INFO
-        ========================== */}
+        {/* SPEECH TO SIGN */}
+        {mode === "speech-to-sign" && (
+          <div className="direction-card">
+            <div className="direction-card-header">
+              <div>
+                <span className="card-label">VOICE INPUT</span>
+                <h3>Speech → Sign Language</h3>
+              </div>
+
+              <span className="direction-icon">🎤</span>
+            </div>
+
+            <p className="direction-description">
+              Use your microphone to convert spoken language
+              into sign-language representation.
+            </p>
+
+            <div className="demo-note">
+              🚧 Speech-to-sign AI integration will be connected
+              here in the next step.
+            </div>
+          </div>
+        )}
+
+        {/* INFO */}
         <div className="translator-info">
           <div className="info-item">
             <span>🔒</span>
@@ -324,6 +391,7 @@ function Translator() {
             </div>
           </div>
         </div>
+
       </div>
     </section>
   );
