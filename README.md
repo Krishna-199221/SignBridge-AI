@@ -1,143 +1,289 @@
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-
-
 # SignBridge-AI 🤟
 
-> AI-powered sign language communication platform
+> AI-powered Sign Language Communication Platform
 
 SignBridge-AI is a web-based platform designed to help reduce the communication gap between people who use sign language and people who do not understand it.
 
-The project combines camera-based interaction, computer vision, artificial intelligence, text translation, and sign-language output into an integrated and expandable communication platform.
+The project is being developed as a team project with separate frontend, backend, AI, documentation, and presentation responsibilities.
+
+The current development focus is building the frontend communication interface and preparing it for integration with backend and AI services.
 
 ---
 
-## 💡 Project Idea
+## 🎯 Current Development Focus
 
-The basic aim of SignBridge-AI is to reduce the communication gap between people who use sign language and people who do not understand it.
+The frontend has been developed as the user-facing communication layer of SignBridge-AI.
 
-Our project has three main communication directions:
+The current frontend provides:
+
+- Multi-page React application
+- Three communication modes
+- Camera-based sign input interface
+- Text input interface
+- Browser speech-recognition interface
+- Navigation between project pages
+- Responsive user interface
+- Frontend structure ready for backend/API integration
+
+The backend and AI systems will be integrated with this frontend as those components are developed.
+
+---
+
+## 🖥️ Frontend
+
+The frontend is built using React and Vite.
+
+The frontend currently contains four main pages:
+
+| Page | Route | Purpose |
+|---|---|---|
+| Home | `/` | Project introduction and overview |
+| How It Works | `/how-it-works` | Explains the three communication directions |
+| About | `/about` | Project mission, vision, and goals |
+| Translator | `/translator` | Main communication interface |
+
+---
+
+## 🤟 Communication Modes
+
+SignBridge-AI is being developed around three main communication directions.
 
 ### 1. 🤟 Sign Language → Text
 
-- User shows a sign through a laptop or mobile camera.
-- Camera captures the hand movement.
-- AI/computer vision detects the sign.
-- System converts the recognized sign into text.
-- Example: User signs **HELLO** → screen shows **HELLO**.
+The user provides sign-language input using the device camera.
+
+#### Current Frontend Functionality
+
+The frontend currently provides:
+
+- Camera access
+- Start Camera
+- Stop Camera
+- Camera preview
+- Camera status
+- Detected sign area
+- Translation/output area
+- AI recognition status
+- Real-time interaction indicators
+
+The actual AI sign-recognition model is not yet connected to the frontend.
+
+#### Planned Integration
+
+The expected future flow is:
+
+    Camera
+       ↓
+    Frontend
+       ↓
+    Backend / AI
+       ↓
+    Sign Recognition
+       ↓
+    Text Response
+       ↓
+    Frontend
+
+The backend and AI team will determine the actual recognition technology, API design, and response format.
+
+---
 
 ### 2. 📝 Text → Sign Language
 
-- User types a word or sentence.
-- System identifies the words.
-- Corresponding sign-language videos or animations are displayed.
-- Example: User types **HELLO** → corresponding sign is shown.
+The user enters text into the translator.
+
+#### Current Frontend Functionality
+
+The frontend currently provides:
+
+- Text input
+- Translation action
+- Controlled-vocabulary demonstration
+- Sign output area
+
+The current implementation is a frontend demonstration.
+
+A future backend/AI service can provide the actual sign-language mapping and output data.
+
+#### Planned Integration
+
+The expected future flow is:
+
+    User Text
+       ↓
+    Frontend
+       ↓
+    Backend / AI
+       ↓
+    Text Processing
+       ↓
+    Sign Mapping
+       ↓
+    Sign Output Data
+       ↓
+    Frontend
+
+The final sign output may use sign-language videos, animations, images, or another visual representation depending on the backend/AI implementation.
+
+---
 
 ### 3. 🎤 Speech → Sign Language
 
-- User speaks through a microphone.
-- Speech is converted into text.
-- Text is processed.
-- Corresponding sign-language output is displayed.
-- Example: User says **"I need help"** → system displays the relevant signs.
+The user provides speech through the browser.
+
+#### Current Frontend Functionality
+
+The frontend currently provides:
+
+- Speech interaction
+- Browser speech recognition
+- Recognized speech text
+- Listening status
+- Sign-output area
+
+The current implementation uses browser speech-recognition capabilities where supported.
+
+#### Planned Integration
+
+The expected future flow is:
+
+    Microphone
+       ↓
+    Frontend
+       ↓
+    Speech Recognition / Backend
+       ↓
+    Text Processing
+       ↓
+    Sign Mapping
+       ↓
+    Sign Output Data
+       ↓
+    Frontend
+
+The final architecture will depend on the backend and AI implementation.
 
 ---
 
-## 🎯 Project Goal
+## 🔗 Frontend ↔ Backend Integration
 
-SignBridge-AI aims to provide a simple and accessible platform for communication between sign-language users and people who do not understand sign language.
+The frontend is designed as the user-facing layer of the application.
 
-The long-term goal is to build an integrated system that can support multiple communication directions in real time.
+The backend will provide the processing and API layer required for communication between the frontend and AI systems.
 
-We are not claiming that sign-language recognition is a completely new research problem. Existing research and tools already exist.
+The general architecture is expected to be:
 
-Our focus is to create an integrated, real-time, and expandable platform combining these communication directions in one system, starting with a controlled vocabulary and gradually expanding it.
+    SignBridge-AI
+          │
+          ▼
+    React Frontend
+          │
+    ┌─────┼─────────────┐
+    │     │             │
+    ▼     ▼             ▼
+    Sign  Text          Speech
+    →     →             →
+    Text  Sign          Sign
+    │     │             │
+    └─────┼─────────────┘
+          │
+          ▼
+     Backend API
+          │
+          ▼
+       AI / ML
+          │
+          ▼
+      Processing
+          │
+          ▼
+    Backend Response
+          │
+          ▼
+    React Frontend
 
----
-
-## ✨ Key Features
-
-- 🤟 **Sign Language Recognition**  
-  Uses a camera-based interface to capture hand gestures and prepare them for AI-based recognition.
-
-- 📝 **Text to Sign Language**  
-  Converts typed words or sentences into corresponding sign-language output.
-
-- 🎤 **Speech to Sign Language**  
-  Converts spoken language into text and prepares the corresponding sign-language output.
-
-- 📷 **Camera Integration**  
-  Provides a browser-based camera interface for real-time interaction.
-
-- 🤖 **AI-Ready Architecture**  
-  The frontend is designed so that AI/computer-vision recognition can be integrated as the project develops.
-
-- ⚡ **Real-Time Interaction**  
-  The interface is designed around real-time sign detection and translation.
-
-- 🌐 **Web-Based Platform**  
-  The application can be accessed through a modern web browser without requiring a separate desktop application.
-
-- 📱 **Responsive Interface**  
-  Designed to work across different screen sizes, including laptops and mobile devices.
-
----
-
-## 🖥️ Current Frontend
-
-The current frontend provides the initial user interface for SignBridge-AI.
-
-It includes:
-
-### 🏠 Landing Page
-
-The landing page introduces SignBridge-AI and explains its purpose.
-
-It contains:
-
-- Project branding
-- Main project description
-- Start Translating button
-- How SignBridge-AI Works section
-- Project mission section
-- Feature highlights
-
-### 🎥 Translator Interface
-
-The translator page provides the main interaction area.
-
-It currently includes:
-
-- Camera preview
-- Start Camera button
-- Stop Camera button
-- Camera status
-- Detected Sign section
-- AI Recognition status
-- Translation section
-- Real-time interaction indicators
-
-The current interface establishes the frontend foundation for future AI-based sign recognition.
+The exact backend API endpoints, request formats, response formats, authentication, database structure, and AI services will be defined during backend development.
 
 ---
 
-## 🛠️ Technology Stack
+## 🧩 Integration Points
 
-### Frontend
+The current frontend has three main areas that will eventually communicate with backend services.
+
+### Sign → Text
+
+The frontend will provide camera/sign input and receive recognized text from the backend/AI system.
+
+    Frontend Camera
+          ↓
+      Backend API
+          ↓
+    AI Sign Recognition
+          ↓
+     Recognized Text
+          ↓
+       Frontend
+
+### Text → Sign
+
+The frontend will send user-entered text and receive sign-language output information.
+
+    Frontend Text
+          ↓
+      Backend API
+          ↓
+    Text Processing
+          ↓
+      Sign Mapping
+          ↓
+      Sign Output
+          ↓
+       Frontend
+
+### Speech → Sign
+
+The frontend will provide speech-derived text and receive sign-language output information.
+
+    Speech / Text
+          ↓
+      Backend API
+          ↓
+    Text Processing
+          ↓
+      Sign Mapping
+          ↓
+      Sign Output
+          ↓
+       Frontend
+
+---
+
+## ⚠️ Backend Integration Status
+
+Backend integration has not yet been completed.
+
+The following items will be decided during backend development:
+
+- API endpoints
+- HTTP methods
+- Request body
+- Response body
+- Required parameters
+- Error response format
+- Status codes
+- File upload requirements if applicable
+- Authentication requirements if applicable
+- AI service integration
+- Sign-language output format
+- Deployment configuration
+
+The frontend should therefore not assume specific backend endpoints until the API contract is agreed upon by the team.
+
+---
+
+## 🛠️ Frontend Technology Stack
+
+### Core Technologies
 
 - React
 - Vite
@@ -145,252 +291,220 @@ The current interface establishes the frontend foundation for future AI-based si
 - HTML5
 - CSS3
 
+### Frontend Libraries
+
+- React Router
+
 ### Browser APIs
 
-- Web Camera API
 - MediaDevices API
-
-### Planned AI / Backend Components
-
-The project is being developed with future integration of:
-
-- Computer Vision
-- Hand Gesture Recognition
-- Machine Learning
-- Artificial Intelligence
-- Speech Recognition
-- Text Processing
-- Sign-Language Video/Animation Output
-
-The exact AI and backend technologies may evolve as development progresses.
-
+- Web Camera API
+- Browser Speech Recognition API where supported
 
 ---
 
-## 🔄 How SignBridge-AI Works
+## 📁 Frontend Structure
 
-SignBridge-AI is planned around three main communication pipelines.
+The current frontend is organized approximately as follows:
 
-### 1. 🤟 Sign Language → Text
+    src/
+    ├── components/
+    │   └── Translator.jsx
+    │
+    ├── pages/
+    │   ├── Home.jsx
+    │   ├── HowItWorks.jsx
+    │   ├── About.jsx
+    │   └── TranslatorPage.jsx
+    │
+    ├── App.jsx
+    ├── App.css
+    ├── index.css
+    └── main.jsx
 
-Camera → Hand Gesture → Hand Detection → AI / Computer Vision → Sign Recognition → Text Output
+### Main Components
 
-The camera captures the user's hand gesture. The AI system processes the gesture and identifies the corresponding sign before displaying the result as text.
+#### `App.jsx`
 
-### 2. 📝 Text → Sign Language
+Responsible for:
 
-User Text → Text Processing → Word / Phrase Identification → Sign Mapping → Sign Video / Animation → Visual Sign Output
+- Main application layout
+- Navigation
+- Routes
+- Footer
+- Page structure
 
-The user enters text, and the system identifies the corresponding signs and displays them using sign-language videos or animations.
+#### `Translator.jsx`
 
-### 3. 🎤 Speech → Sign Language
+Responsible for:
 
-Microphone → Speech Recognition → Text → Text Processing → Sign Mapping → Sign Video / Animation → Visual Sign Output
+- Translator interface
+- Communication mode selection
+- Sign → Text interface
+- Text → Sign interface
+- Speech → Sign interface
+- Camera interaction
+- Speech recognition interaction
 
-The user's speech is converted into text and then processed to determine the corresponding sign-language output.
+#### `pages/`
 
----
-
-## 🧠 AI and Computer Vision
-
-The AI component is one of the main future development areas of SignBridge-AI.
-
-The planned recognition pipeline includes:
-
-1. Camera input
-2. Hand detection
-3. Hand landmark extraction
-4. Gesture analysis
-5. Sign classification
-6. Text generation
-
-A controlled vocabulary will be used during the initial development stage.
-
-The vocabulary can gradually be expanded as the recognition system is improved.
-
----
-
-## 🎯 Controlled Vocabulary
-
-The initial version of the project will focus on a limited set of signs instead of attempting to recognize every possible sign immediately.
-
-For example, the initial vocabulary may contain common signs such as:
-
-- HELLO
-- YES
-- NO
-- THANK YOU
-- PLEASE
-- HELP
-- GOOD
-- BAD
-- STOP
-- START
-
-The exact vocabulary will be determined during AI model and dataset development.
-
-Starting with a controlled vocabulary allows the team to test the complete communication pipeline before expanding the system.
+Contains the individual application pages.
 
 ---
 
-## 📈 Future Expansion
+## 🌐 Application Routes
 
-After the initial controlled vocabulary is working, the system can be expanded with:
+The current frontend uses React Router.
 
-- More signs
-- More words and phrases
-- Sentence-level translation
-- Improved gesture recognition
-- Better hand tracking
-- Multiple sign-language support
-- Sign-language video libraries
-- Sign-language animations
-- Speech integration
-- Improved real-time performance
+Available routes:
 
----
+- `/`
+  - Home page
 
-## 🔐 Privacy and Security
+- `/how-it-works`
+  - Explains how the three communication directions work
 
-Camera access should only be requested when required by the application.
+- `/about`
+  - Provides project information, mission, and vision
 
-Users must explicitly provide browser permission before the application can access the camera.
-
-The project will follow appropriate security and privacy practices as backend and AI services are introduced.
-
-Sensitive information such as API keys, passwords, access tokens, and private credentials must never be committed to the GitHub repository.
+- `/translator`
+  - Contains the main translator interface
 
 ---
 
-## ⚙️ Installation and Setup
+## 📷 Camera Functionality
 
-### Prerequisites
+The Sign → Text mode uses browser camera functionality.
 
-Before running SignBridge-AI locally, make sure the following are installed:
+When the user selects Start Camera, the browser requests permission to access the device camera.
 
-- Node.js
-- npm
-- Git
-
-You can check the installed versions with:
-
-    node --version
-    npm --version
-    git --version
-
----
-
-## 📥 Clone the Repository
-
-Clone the SignBridge-AI repository:
-
-    git clone https://github.com/Krishna-199221/SignBridge-AI.git
-
-Move into the project directory:
-
-    cd SignBridge-AI
-
-Switch to the frontend branch:
-
-    git checkout Frontend
-
-Install the required dependencies:
-
-    npm install
-
----
-
-## ▶️ Run the Frontend
-
-Start the development server:
-
-    npm run dev
-
-Vite will provide a local development URL, usually:
-
-    http://localhost:5173/
-
-Open the provided URL in your browser to access the application.
-
----
-
-## 📋 Available Scripts
-
-### Start Development Server
-
-    npm run dev
-
-Starts the Vite development server for local development.
-
-### Build the Project
-
-    npm run build
-
-Creates an optimized production build of the application.
-
-### Preview Production Build
-
-    npm run preview
-
-Runs the production build locally for testing.
-
-### Run ESLint
-
-    npm run lint
-
-Checks the project for JavaScript and code-quality issues.
-
----
-
-## 📷 Camera Permissions
-
-The SignBridge-AI translator uses the browser's camera functionality.
-
-When the user selects **Start Camera**, the browser requests permission to access the device camera.
-
-The user must select **Allow** to enable the camera.
+The user must allow camera access for the camera preview to work.
 
 The current workflow is:
 
     Start Camera
-          ↓
+         ↓
     Browser requests permission
-          ↓
+         ↓
+    User allows camera
+         ↓
     Camera stream starts
-          ↓
+         ↓
     Live preview appears
-          ↓
+         ↓
     Future AI system processes the gesture
 
-When the user selects **Stop Camera**, the active camera stream is stopped.
+When the user selects Stop Camera, the active camera stream is stopped.
 
-Camera access is controlled by the browser and operating system.
+The current camera interface provides the foundation for future AI-based sign recognition.
+
+---
+
+## 🎤 Speech Functionality
+
+The Speech → Sign mode uses browser speech-recognition capabilities where supported.
+
+The current workflow is:
+
+    User speaks
+         ↓
+    Browser Speech Recognition
+         ↓
+    Recognized Text
+         ↓
+    Frontend Display
+         ↓
+    Future Backend / AI Processing
+         ↓
+    Sign Output
+
+Speech recognition behavior depends on:
+
+- Browser support
+- Microphone permission
+- Device capabilities
+- Network/browser requirements where applicable
+
+The current frontend does not yet provide a complete production speech-to-sign system.
+
+---
+
+## 📝 Text → Sign Functionality
+
+The Text → Sign mode currently demonstrates the communication flow using controlled vocabulary.
+
+The current frontend provides:
+
+    Text Input
+        ↓
+    Translation Action
+        ↓
+    Controlled Vocabulary
+        ↓
+    Sign Output Demonstration
+
+The final system can later connect this interface to backend services that provide:
+
+- Word mapping
+- Phrase mapping
+- Sign-language resources
+- Video output
+- Animation output
+- Other visual sign representations
 
 ---
 
 ## 🧪 Current Testing
 
-The frontend should currently be tested for:
+The frontend has been tested for the following areas:
 
 - Application startup
-- Navigation
+- Home page
+- How It Works page
+- About page
+- Translator page
+- Page navigation
 - Responsive layout
 - Camera permission
 - Start Camera functionality
 - Stop Camera functionality
 - Camera preview
-- Translator interface
-- Status messages
-- Browser console errors
+- Sign → Text interface
+- Text → Sign interface
+- Speech → Sign interface
+- Speech recognition where supported
+- Translator mode switching
+- ESLint
+- Production build
 
-AI recognition accuracy will be tested after the AI recognition system is integrated.
+AI recognition accuracy cannot be evaluated until the AI recognition system is integrated.
 
+---
+
+## ⚠️ Current Limitations
+
+SignBridge-AI is currently under development.
+
+At the current stage:
+
+- The frontend interface is available.
+- Multi-page navigation is available.
+- Three communication modes are available.
+- Browser camera interaction is available.
+- Browser speech recognition is available where supported.
+- The AI sign-recognition system is not yet integrated.
+- Backend APIs are not yet integrated.
+- Full sign-language generation/output is not yet implemented.
+- Production translation is not yet available.
+- The final backend and AI architecture is still being developed.
+
+The current frontend should therefore be considered a frontend foundation and demonstration rather than a finished production translation system.
 
 ---
 
 ## 🌿 Git Branch Structure
 
-SignBridge-AI uses separate branches for different areas of development.
+The project uses separate branches for different areas of development.
 
     main
     ├── Frontend
@@ -403,7 +517,7 @@ SignBridge-AI uses separate branches for different areas of development.
 
 | Branch | Responsibility |
 |---|---|
-| `main` | Stable integrated project |
+| `main` | Integrated project |
 | `Frontend` | React UI and frontend development |
 | `Backend` | Backend and API development |
 | `ai` | AI, computer vision, datasets, and recognition |
@@ -414,67 +528,95 @@ SignBridge-AI uses separate branches for different areas of development.
 
 ## 👥 Team Collaboration
 
-Team members should work on their assigned branches rather than directly changing the `main` branch.
+Team members should work on their assigned branches instead of directly modifying `main`.
 
-Before starting work:
+The current development workflow is:
+
+    Team Member
+         ↓
+    Assigned Branch
+         ↓
+    Development
+         ↓
+    Testing
+         ↓
+    Commit
+         ↓
+    Push
+         ↓
+    Pull Request / Merge
+         ↓
+    main
+
+---
+
+## 🔀 Frontend Development Workflow
+
+For frontend development:
 
     git checkout Frontend
     git pull origin Frontend
 
-After making changes:
+Make the required changes and test them.
+
+Then:
 
     git add .
     git commit -m "Describe your changes"
     git push origin Frontend
 
----
-
-## 🔀 Pull Request Workflow
-
-When a feature is ready:
-
-1. Push the branch to GitHub.
-2. Create a Pull Request.
-3. Describe the changes.
-4. Allow the team to review the changes.
-5. Resolve review comments.
-6. Merge after approval.
-
-The general workflow is:
-
-    Frontend → main
-    Backend → main
-    ai → main
-    documentation → main
-    presentation → main
-
-The `main` branch should contain the integrated project version.
+Frontend changes can then be reviewed and integrated into `main`.
 
 ---
 
-## 📝 Commit Message Convention
+## 🔀 Backend Development Workflow
 
-Use clear and meaningful commit messages.
+Backend development should be performed on the `Backend` branch.
 
-### New Feature
+The backend teammate can work independently on:
 
-    Add: camera preview
+- API development
+- Backend processing
+- Database integration
+- Authentication if required
+- AI service communication
+- API testing
 
-### Bug Fix
+Once the backend API contract is ready, the frontend can be updated to communicate with the backend.
 
-    Fix: camera permission issue
+---
 
-### UI Change
+## 🤝 Frontend and Backend Team Coordination
 
-    Update: translator interface
+Before connecting the frontend to the backend, the team should agree on an API contract.
 
-### Documentation
+The API contract should define:
 
-    Docs: update README
+- Endpoint
+- HTTP method
+- Request body
+- Response body
+- Required parameters
+- Error responses
+- Status codes
+- File upload requirements if applicable
+- Authentication requirements if applicable
 
-### Refactoring
+Example structure:
 
-    Refactor: translator component
+    Frontend
+       ↓
+    HTTP Request
+       ↓
+    Backend API
+       ↓
+    Processing
+       ↓
+    HTTP Response
+       ↓
+    Frontend
+
+The actual API details should be added to this README once the backend implementation is finalized.
 
 ---
 
@@ -485,113 +627,119 @@ Never commit sensitive information such as:
 - API keys
 - Passwords
 - Access tokens
-- Private credentials
 - Database credentials
+- Private credentials
 - Secret configuration files
 
-If environment variables are required, use a local `.env` file and keep secrets out of GitHub.
+If environment variables are required, use a local `.env` file.
 
 Example:
 
     VITE_API_URL=
-    VITE_AI_API_KEY=
-
-A safe template can be maintained as:
-
-    .env.example
 
 Do not commit:
 
     .env
 
+A safe example configuration can be maintained using:
+
+    .env.example
+
 ---
 
 ## 📊 Development Status
 
-### 🟢 Completed / In Progress
+### 🟢 Frontend Completed
 
-- [x] Repository setup
-- [x] Team branch structure
 - [x] React/Vite frontend setup
-- [x] Landing page
+- [x] Landing/Home page
 - [x] Responsive UI
+- [x] Multi-page navigation
+- [x] Home page
+- [x] How It Works page
+- [x] About page
+- [x] Translator page
+- [x] React Router integration
 - [x] Camera interface
 - [x] Browser camera access
-- [x] Translator interface
-- [x] Start/Stop Camera interaction
+- [x] Start Camera interaction
+- [x] Stop Camera interaction
+- [x] Sign → Text frontend mode
+- [x] Text → Sign frontend mode
+- [x] Speech → Sign frontend mode
+- [x] Responsive translator interface
+- [x] ESLint verification
+- [x] Production build verification
+- [x] Frontend branch pushed to GitHub
 
-### 🟡 Under Development
+### 🟡 Integration / Development
 
+- [ ] Backend API integration
 - [ ] AI sign recognition
 - [ ] Hand landmark processing
-- [ ] Sign-to-text translation
-- [ ] Text-to-sign output
-- [ ] Speech-to-sign output
-- [ ] Backend API integration
-- [ ] Controlled vocabulary
-- [ ] Model evaluation
+- [ ] Sign-to-text AI pipeline
+- [ ] Full text-to-sign output system
+- [ ] Full speech-to-sign output system
+- [ ] Backend/AI communication
+- [ ] Controlled vocabulary implementation
 - [ ] Automated testing
 - [ ] Production deployment
 
 ---
 
-## 🗺️ Development Roadmap
+# 🗺️ Current Development Roadmap
 
-### Phase 1 — Foundation
+## Phase 1 — Frontend Foundation
 
-- Repository setup
-- Branch organization
-- Frontend foundation
-- Basic responsive UI
-- Camera interface
+- [x] Repository setup
+- [x] Frontend branch
+- [x] React/Vite setup
+- [x] Responsive UI
+- [x] Multi-page application
+- [x] Translator interface
+- [x] Three communication modes
 
-### Phase 2 — Sign Language → Text
+## Phase 2 — Backend
 
-- Hand detection
-- Hand landmark extraction
-- Dataset preparation
-- Gesture classification
-- Controlled vocabulary
-- Text output
+- [ ] Backend project setup
+- [ ] API architecture
+- [ ] API endpoints
+- [ ] Request/response definitions
+- [ ] Backend testing
+- [ ] Frontend/backend connection
 
-### Phase 3 — Text → Sign Language
+## Phase 3 — AI
 
-- Text input
-- Word and phrase processing
-- Sign mapping
-- Sign-language video/animation library
-- Visual sign output
+- [ ] Dataset preparation
+- [ ] Hand detection
+- [ ] Hand landmark extraction
+- [ ] Gesture classification
+- [ ] Sign recognition
+- [ ] Controlled vocabulary
+- [ ] AI evaluation
 
-### Phase 4 — Speech → Sign Language
+## Phase 4 — Full Integration
 
-- Microphone input
-- Speech recognition
-- Text processing
-- Sign mapping
-- Sign-language output
+- [ ] Frontend + Backend integration
+- [ ] Backend + AI integration
+- [ ] Sign → Text pipeline
+- [ ] Text → Sign pipeline
+- [ ] Speech → Sign pipeline
+- [ ] Error handling
+- [ ] Performance testing
 
-### Phase 5 — Integration
+## Phase 5 — Expansion
 
-- Frontend and backend integration
-- Frontend and AI integration
-- Real-time processing
-- Error handling
-- Performance improvements
-- Testing
-
-### Phase 6 — Expansion
-
-- Larger vocabulary
-- More sign-language support
-- Sentence-level translation
-- Improved recognition
-- Accessibility improvements
-- Deployment
-- Future mobile support
+- [ ] Larger vocabulary
+- [ ] Sentence-level translation
+- [ ] Improved recognition
+- [ ] Sign-language video/animation library
+- [ ] Accessibility improvements
+- [ ] Production deployment
 
 ---
 
-## ♿ Accessibility Goals
+# ♿ Accessibility Goals
 
 Accessibility is an important part of SignBridge-AI.
 
@@ -606,35 +754,53 @@ The platform aims to provide:
 - Understandable translation output
 - Support for different screen sizes
 
-Future accessibility features may be added as the project develops.
+Future accessibility improvements will be added as the project develops.
 
 ---
 
-## ⚠️ Current Limitations
+# 📄 License
 
-SignBridge-AI is currently under development.
+The project is currently under development.
 
-At the present stage:
-
-- The frontend interface is available.
-- Browser camera interaction is available.
-- The AI sign-recognition system is still being developed.
-- Translation output is not yet production-ready.
-- Recognition accuracy will depend on the selected dataset, model, training process, and testing.
-
-The current translator may therefore display:
-
-    Waiting for camera
-
-or:
-
-    Waiting for sign detection...
-
-until the AI system is connected.
+License information will be maintained in the repository `LICENSE` file.
 
 ---
 
-## 🤝 Contributing
+# 🌍 Vision
+
+> **Technology that connects people.**
+
+SignBridge-AI aims to explore how artificial intelligence, computer vision, speech processing, and sign-language resources can be combined into one accessible communication platform.
+
+---
+
+# 📦 Repository
+
+**SignBridge-AI**
+
+GitHub Repository:
+
+https://github.com/Krishna-199221/SignBridge-AI
+
+---
+
+# ⭐ Project Status
+
+    🚧 SignBridge-AI — In Development
+
+The frontend foundation and communication interface are currently being developed.
+
+The next major development stage is connecting the frontend with the backend and AI systems.
+
+---
+
+## 🤟 SignBridge-AI
+
+**AI-based Sign Language Communication Platform**
+
+> Technology that connects people.
+
+# 🤝 Contribution Guidelines
 
 Contributions are welcome.
 
@@ -642,7 +808,7 @@ Before making changes:
 
     git pull
 
-Switch to the appropriate branch:
+Switch to the appropriate development branch:
 
     git checkout Frontend
 
@@ -658,7 +824,7 @@ For larger changes, create a Pull Request for review.
 
 ---
 
-## 📌 Development Guidelines
+# 📌 Development Guidelines
 
 Please follow these practices:
 
@@ -671,46 +837,221 @@ Please follow these practices:
 - Do not directly modify `main` unless authorized.
 - Keep existing functionality working.
 - Document important architectural changes.
+- Coordinate changes that affect multiple team branches.
+- Agree on API contracts before frontend/backend integration.
 
 ---
 
-## 📄 License
+# 🔄 Frontend → Backend Integration Plan
 
-The project is currently under development.
+The frontend and backend should be developed independently until the API contract is finalized.
 
-License information will be maintained in the repository `LICENSE` file.
+The planned integration process is:
 
----
+    Frontend Development
+            ↓
+    Backend Development
+            ↓
+    API Contract
+            ↓
+    Frontend API Integration
+            ↓
+    Backend + AI Integration
+            ↓
+    Full System Testing
 
-## 🌍 Vision
+The frontend should consume the backend API rather than directly depending on the internal implementation of the backend or AI model.
 
-> **Technology that connects people.**
-
-SignBridge-AI aims to explore how artificial intelligence, computer vision, speech processing, and sign-language resources can be combined into one accessible communication platform.
-
----
-
-## 📦 Repository
-
-**SignBridge-AI**
-
-GitHub Repository:
-
-https://github.com/Krishna-199221/SignBridge-AI
+This allows the frontend and backend teams to work independently while maintaining a clear communication interface between them.
 
 ---
 
-## ⭐ Project Status
+# 📋 Future API Contract
 
-    🚧 SignBridge-AI — In Development
+The following information should be documented here when the backend API is ready:
 
-The project is being developed incrementally, starting with the frontend and camera interaction and progressing toward AI recognition, translation, speech processing, and integrated communication.
+| Item | Description |
+|---|---|
+| Endpoint | Backend API URL |
+| Method | HTTP method such as GET or POST |
+| Request | Data sent by the frontend |
+| Response | Data returned by the backend |
+| Errors | Error response structure |
+| Authentication | Authentication requirements |
+| File Upload | Camera/image/file requirements if applicable |
+| Output | Text, sign video, animation, or other output |
+
+Example future structure:
+
+    Frontend
+        ↓
+    POST /api/...
+        ↓
+    Backend
+        ↓
+    AI Processing
+        ↓
+    JSON Response
+        ↓
+    Frontend
+
+The exact endpoint names and data structures will be added after backend development is completed.
 
 ---
 
-## 🤟 SignBridge-AI
+# 🧪 Integration Testing
+
+After the backend API is available, the team should test:
+
+- Frontend can communicate with backend
+- API requests are sent correctly
+- API responses are handled correctly
+- Loading states are displayed
+- Errors are handled properly
+- Camera data can be processed where required
+- Sign recognition results appear in the UI
+- Text input reaches the backend
+- Sign output data is displayed correctly
+- Speech-derived text can be processed
+- Backend and AI services communicate correctly
+- Complete communication pipelines work end-to-end
+
+---
+
+# 🔐 Environment Configuration
+
+If the frontend requires a backend URL, environment variables should be used instead of hardcoding deployment-specific values.
+
+Example:
+
+    VITE_API_URL=http://localhost:8000
+
+The actual value will depend on the backend implementation and deployment environment.
+
+Environment files containing secrets must not be committed to GitHub.
+
+Use `.env.example` to document required environment variables without exposing secret values.
+
+---
+
+# 🏗️ Current Project Architecture
+
+The project is being developed as separate but connected layers:
+
+    ┌──────────────────────────────┐
+    │          Frontend            │
+    │      React + Vite            │
+    │                              │
+    │  Home / About / Translator   │
+    └──────────────┬───────────────┘
+                   │
+                   │ API
+                   ▼
+    ┌──────────────────────────────┐
+    │           Backend            │
+    │                              │
+    │  API / Processing / Services │
+    └──────────────┬───────────────┘
+                   │
+                   │
+                   ▼
+    ┌──────────────────────────────┐
+    │             AI               │
+    │                              │
+    │ Computer Vision / ML / NLP  │
+    └──────────────────────────────┘
+
+The exact backend and AI architecture will be finalized as development progresses.
+
+---
+
+# 👥 Team Responsibilities
+
+The repository contains separate branches for different development responsibilities.
+
+### Frontend
+
+Responsible for:
+
+- React application
+- User interface
+- Navigation
+- Translator interface
+- Camera interaction
+- Speech interaction
+- Frontend/backend API integration
+
+### Backend
+
+Responsible for:
+
+- Backend application
+- API development
+- Data processing
+- Backend services
+- Database integration where required
+- Communication with AI services
+
+### AI
+
+Responsible for:
+
+- Computer vision
+- Dataset preparation
+- Hand landmark processing
+- Gesture recognition
+- Machine learning models
+- Sign classification
+- AI evaluation
+
+### Documentation
+
+Responsible for:
+
+- Project documentation
+- Technical documentation
+- Project reports
+- Supporting written material
+
+### Presentation
+
+Responsible for:
+
+- Presentation material
+- Project demonstration
+- Demo preparation
+- Project explanation
+
+---
+
+# 🚧 Current Project State
+
+The project is currently in active development.
+
+The frontend foundation has been completed and pushed to the `Frontend` branch.
+
+The next major development stage is backend development and the definition of the frontend/backend API contract.
+
+After the backend API is available, the frontend can be connected to the backend and the complete communication pipelines can be tested.
+
+---
+
+# 📌 Important Note
+
+The current frontend is not intended to represent the final AI system.
+
+The existing translator modes establish the user interface and communication flow.
+
+Backend and AI services will provide the actual processing required for production-level sign recognition and sign-language output.
+
+The architecture is intentionally being developed incrementally so that each team member can work on their assigned area without blocking the others.
+
+---
+
+# 🤟 SignBridge-AI
 
 **AI-based Sign Language Communication Platform**
 
 > Technology that connects people.
 
+🚧 **Currently in development**
