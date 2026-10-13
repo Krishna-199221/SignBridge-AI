@@ -3,63 +3,30 @@ import { useEffect, useRef, useState } from "react";
 function Translator() {
   const videoRef = useRef(null);
   const streamRef = useRef(null);
-  const recognitionRef = useRef(null);
+  const intervalRef = useRef(null);
 
-  // -----------------------------
-  // TRANSLATOR MODE
-  // -----------------------------
-  const [mode, setMode] = useState("sign-to-text");
-
-  // -----------------------------
-  // CAMERA STATE
-  // -----------------------------
   const [cameraStarted, setCameraStarted] = useState(false);
   const [cameraError, setCameraError] = useState("");
 
-  // -----------------------------
-  // SIGN TO TEXT
-  // -----------------------------
   const [detectedSign, setDetectedSign] = useState("—");
-  const [translation, setTranslation] = useState("—");
-  const [status, setStatus] = useState(
-    "Waiting for sign detection..."
+  const [translation, setTranslation] = useState(
+    "Start the camera and show a sign."
   );
+  const [status, setStatus] = useState("Waiting");
 
-  // -----------------------------
-  // TEXT TO SIGN
-  // -----------------------------
-  const [textInput, setTextInput] = useState("");
-  const [signOutput, setSignOutput] = useState("");
-
-  // -----------------------------
-  // SPEECH TO SIGN
-  // -----------------------------
-  const [speechText, setSpeechText] = useState("");
-  const [isListening, setIsListening] = useState(false);
-  const [speechError, setSpeechError] = useState("");
-
-  // =========================================================
-  // CAMERA
-  // =========================================================
+  // ==============================
+  // Start camera
+  // ==============================
 
   const startCamera = async () => {
     try {
       setCameraError("");
-      setStatus("Starting camera...");
-
-      if (!navigator.mediaDevices?.getUserMedia) {
-        throw new Error("Camera API is not supported.");
-      }
 
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: "user",
-          width: {
-            ideal: 1280,
-          },
-          height: {
-            ideal: 720,
-          },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
         },
         audio: false,
       });
@@ -72,23 +39,30 @@ function Translator() {
       }
 
       setCameraStarted(true);
-      setDetectedSign("—");
-      setTranslation("—");
-      setStatus("Camera ready — waiting for sign detection...");
-    } catch (error) {
-      console.error("Camera error:", error);
+      setStatus("AI detection active");
 
-      setCameraStarted(false);
-
-      setCameraError(
-        "Unable to access the camera. Please allow camera permission and try again."
+      intervalRef.current = setInterval(
+        sendFrameToBackend,
+        500
       );
+    } catch (error) {
+      console.error(error);
 
-      setStatus("Camera permission required.");
+      setCameraError("Unable to access the camera.");
+      setStatus("Camera error");
     }
   };
 
+  // ==============================
+  // Stop camera
+  // ==============================
+
   const stopCamera = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => {
         track.stop();
@@ -103,698 +77,308 @@ function Translator() {
 
     setCameraStarted(false);
     setDetectedSign("—");
-    setTranslation("—");
-    setStatus("Camera stopped.");
+    setTranslation("Camera stopped.");
+    setStatus("Waiting");
   };
 
-  // =========================================================
-  // TEXT TO SIGN
-  // =========================================================
+  // ==============================
+  // Send camera frame to backend
+  // ==============================
 
-  const handleTextToSign = () => {
-    const text = textInput.trim();
-
-    if (!text) {
-      setSignOutput("");
+  const sendFrameToBackend = async () => {
+    if (!videoRef.current) {
       return;
     }
 
-    const words = text
-      .toLowerCase()
-      .split(/\s+/)
-      .filter(Boolean);
+    const video = videoRef.current;
 
-    const output = words
-      .map((word) => `[${word}]`)
-      .join(" ");
-
-    setSignOutput(output);
-  };
-
-  const clearTextToSign = () => {
-    setTextInput("");
-    setSignOutput("");
-  };
-
-  // =========================================================
-  // SPEECH TO SIGN
-  // =========================================================
-
-  const startSpeechRecognition = () => {
-    setSpeechError("");
-
-    const SpeechRecognition =
-      window.SpeechRecognition ||
-      window.webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      setSpeechError(
-        "Speech recognition is not supported in this browser."
-      );
+    if (video.readyState < 2) {
       return;
     }
 
-    const recognition = new SpeechRecognition();
-
-    recognition.lang = "en-US";
-    recognition.continuous = false;
-    recognition.interimResults = false;
-
-    recognition.onstart = () => {
-      setIsListening(true);
-      setSpeechError("");
-    };
-
-    recognition.onresult = (event) => {
-      const result =
-        event.results?.[0]?.[0]?.transcript || "";
-
-      setSpeechText(result);
-    };
-
-    recognition.onerror = (event) => {
-      console.error("Speech recognition error:", event);
-
-      setSpeechError(
-        "Unable to recognize speech. Please try again."
-      );
-
-      setIsListening(false);
-    };
-
-    recognition.onend = () => {
-      setIsListening(false);
-    };
-
-    recognitionRef.current = recognition;
-
-    try {
-      recognition.start();
-    } catch (error) {
-      console.error("Speech recognition start error:", error);
-      setIsListening(false);
-      setSpeechError(
-        "Speech recognition could not be started."
-      );
-    }
-  };
-
-  const stopSpeechRecognition = () => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-      recognitionRef.current = null;
+    if (!video.videoWidth || !video.videoHeight) {
+      return;
     }
 
-    setIsListening(false);
+    const canvas = document.createElement("canvas");
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const context = canvas.getContext("2d");
+
+    context.drawImage(
+      video,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+    canvas.toBlob(
+      async (blob) => {
+        if (!blob) {
+          return;
+        }
+
+        const formData = new FormData();
+
+        formData.append(
+          "image",
+          blob,
+          "frame.jpg"
+        );
+
+        try {
+          const response = await fetch(
+            "http://127.0.0.1:5000/predict",
+            {
+              method: "POST",
+              body: formData,
+            }
+          );
+
+          const data = await response.json();
+
+          console.log("Backend response:", data);
+
+          if (data.stable_prediction) {
+            setDetectedSign(data.stable_prediction);
+
+            setTranslation(
+              data.stable_prediction.replace("_", " ")
+            );
+
+            setStatus("Sign detected");
+          } else {
+            setDetectedSign("—");
+
+            setTranslation("Analyzing sign....");
+
+            setStatus("AnalyzingS");
+          }
+        } catch (error) {
+          console.error(
+            "Backend connection error:",
+            error
+          );
+
+          setStatus("Backend connection error");
+        }
+      },
+      "image/jpeg",
+      0.8
+    );
   };
 
-  const clearSpeech = () => {
-    stopSpeechRecognition();
-    setSpeechText("");
-    setSpeechError("");
-  };
-
-  // =========================================================
-  // CLEANUP
-  // =========================================================
+  // ==============================
+  // Cleanup
+  // ==============================
 
   useEffect(() => {
     return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => {
           track.stop();
         });
       }
-
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
     };
   }, []);
 
-  // =========================================================
+  // ==============================
   // UI
-  // =========================================================
+  // ==============================
 
   return (
-    <section className="translator-section" id="translator">
+    <section className="translator-page">
       <div className="translator-container">
 
-        {/* HEADER */}
+        {/* Header */}
+
         <div className="translator-header">
-          <p className="eyebrow">
-            SIGNBRIDGE-AI TRANSLATOR
-          </p>
-
-          <h2>
-            Sign Language
-            <span> Translator</span>
-          </h2>
-
-          <p>
-            Choose a communication direction and use
-            SignBridge-AI to make communication easier.
-          </p>
-
-          {/* MODE SELECTOR */}
-          <div className="translator-modes">
-
-            <button
-              type="button"
-              className={`translator-mode ${
-                mode === "sign-to-text" ? "active" : ""
-              }`}
-              onClick={() => setMode("sign-to-text")}
-            >
-              🤟 Sign → Text
-            </button>
-
-            <button
-              type="button"
-              className={`translator-mode ${
-                mode === "text-to-sign" ? "active" : ""
-              }`}
-              onClick={() => setMode("text-to-sign")}
-            >
-              📝 Text → Sign
-            </button>
-
-            <button
-              type="button"
-              className={`translator-mode ${
-                mode === "speech-to-sign" ? "active" : ""
-              }`}
-              onClick={() => setMode("speech-to-sign")}
-            >
-              🎤 Speech → Sign
-            </button>
-
-          </div>
-        </div>
-
-        {/* =================================================
-            SIGN → TEXT
-        ================================================= */}
-
-        {mode === "sign-to-text" && (
-          <div className="translator-grid">
-
-            {/* CAMERA CARD */}
-            <div className="translator-card camera-card">
-
-              <div className="translator-card-header">
-                <div>
-                  <span className="card-label">
-                    CAMERA
-                  </span>
-
-                  <h3>Camera Preview</h3>
-                </div>
-
-                <div
-                  className={`camera-status ${
-                    cameraStarted ? "active" : ""
-                  }`}
-                >
-                  <span></span>
-                  {cameraStarted ? "LIVE" : "READY"}
-                </div>
-              </div>
-
-              {/* CAMERA */}
-              <div className="camera-box">
-
-                {!cameraStarted && (
-                  <div className="camera-placeholder">
-
-                    <div className="camera-placeholder-icon">
-                      📷
-                    </div>
-
-                    <h4>Camera Preview</h4>
-
-                    <p>
-                      Your camera feed will appear here.
-                    </p>
-
-                  </div>
-                )}
-
-                <video
-                  ref={videoRef}
-                  className={`camera-video ${
-                    cameraStarted ? "visible" : ""
-                  }`}
-                  autoPlay
-                  playsInline
-                  muted
-                />
-
-                {cameraStarted && (
-                  <div className="camera-overlay">
-
-                    <div className="corner top-left"></div>
-                    <div className="corner top-right"></div>
-                    <div className="corner bottom-left"></div>
-                    <div className="corner bottom-right"></div>
-
-                    <div className="detection-line"></div>
-
-                    <div className="camera-overlay-text">
-                      🤖 AI detection active
-                    </div>
-
-                  </div>
-                )}
-
-              </div>
-
-              {/* CAMERA ERROR */}
-              {cameraError && (
-                <div className="camera-error">
-                  <span>⚠️</span>
-                  <p>{cameraError}</p>
-                </div>
-              )}
-
-              {/* CAMERA CONTROLS */}
-              <div className="camera-controls">
-
-                {!cameraStarted ? (
-                  <button
-                    type="button"
-                    className="camera-button"
-                    onClick={startCamera}
-                  >
-                    <span>📷</span>
-                    Start Camera
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    className="camera-button stop"
-                    onClick={stopCamera}
-                  >
-                    <span>⏹</span>
-                    Stop Camera
-                  </button>
-                )}
-
-              </div>
-
-            </div>
-
-            {/* TRANSLATION CARD */}
-            <div className="translator-card translation-card">
-
-              <div className="translator-card-header">
-
-                <div>
-                  <span className="card-label">
-                    AI TRANSLATION
-                  </span>
-
-                  <h3>Translation</h3>
-                </div>
-
-                <span className="ai-icon">
-                  🤖
-                </span>
-
-              </div>
-
-              <p className="translation-description">
-                Your detected sign will appear here.
-              </p>
-
-              {/* DETECTED SIGN */}
-              <div className="result-box">
-
-                <div className="result-header">
-                  <span>Detected Sign</span>
-                  <span className="result-icon">
-                    🤟
-                  </span>
-                </div>
-
-                <strong className="result-value">
-                  {detectedSign}
-                </strong>
-
-              </div>
-
-              {/* AI STATUS */}
-              <div className="result-box ai-result">
-
-                <div className="result-header">
-                  <span>AI Recognition</span>
-                  <span className="pulse-dot"></span>
-                </div>
-
-                <strong className="result-status">
-                  {cameraStarted
-                    ? "Analyzing camera..."
-                    : "Waiting for camera"}
-                </strong>
-
-              </div>
-
-              {/* TRANSLATION */}
-              <div className="result-box">
-
-                <div className="result-header">
-                  <span>Translation</span>
-
-                  <span className="result-icon">
-                    💬
-                  </span>
-                </div>
-
-                <strong className="result-value">
-                  {translation}
-                </strong>
-
-              </div>
-
-              {/* STATUS */}
-              <div className="translation-status">
-
-                <span
-                  className={`status-dot ${
-                    cameraStarted ? "active" : ""
-                  }`}
-                ></span>
-
-                <span>{status}</span>
-
-              </div>
-
-            </div>
-
-          </div>
-        )}
-
-        {/* =================================================
-            TEXT → SIGN
-        ================================================= */}
-
-        {mode === "text-to-sign" && (
-          <div className="direction-card">
-
-            <div className="direction-card-header">
-
-              <div>
-                <span className="card-label">
-                  TEXT INPUT
-                </span>
-
-                <h3>
-                  Text → Sign Language
-                </h3>
-              </div>
-
-              <span className="direction-icon">
-                📝
-              </span>
-
-            </div>
-
-            <p className="direction-description">
-              Enter text and convert it into a
-              sign-language representation.
+          <div>
+            <p className="eyebrow">
+              LIVE TRANSLATOR
             </p>
 
-            {/* TEXT INPUT */}
-            <label
-              className="input-label"
-              htmlFor="signbridge-text-input"
-            >
-              Enter your message
-            </label>
+            <h1>
+              Sign Language Translator
+            </h1>
 
-            <textarea
-              id="signbridge-text-input"
-              className="translation-input"
-              value={textInput}
-              onChange={(event) =>
-                setTextInput(event.target.value)
+            <p>
+              Use your camera to translate
+              supported hand signs into text
+              in real time.
+            </p>
+          </div>
+
+          <div className="translator-status">
+            <span
+              className={
+                cameraStarted
+                  ? "status-dot active"
+                  : "status-dot"
               }
-              placeholder="Example: Hello, how are you?"
-              rows="5"
             />
 
-            {/* BUTTONS */}
-            <div className="direction-actions">
-
-              <button
-                type="button"
-                className="primary-button"
-                onClick={handleTextToSign}
-              >
-                🤟 Convert to Sign
-              </button>
-
-              <button
-                type="button"
-                className="secondary-button"
-                onClick={clearTextToSign}
-              >
-                Clear
-              </button>
-
-            </div>
-
-            {/* OUTPUT */}
-            <div className="sign-output-box">
-
-              <div className="result-header">
-                <span>
-                  Sign Language Output
-                </span>
-
-                <span className="result-icon">
-                  🤟
-                </span>
-              </div>
-
-              {signOutput ? (
-                <div className="sign-output">
-                  {signOutput}
-                </div>
-              ) : (
-                <div className="sign-output empty">
-                  Your sign-language output will
-                  appear here.
-                </div>
-              )}
-
-            </div>
-
-            {/* INFORMATION */}
-            <div className="demo-note">
-              ℹ️ This is currently a frontend
-              demonstration. The actual sign-language
-              generation model will be connected later.
-            </div>
-
+            {status}
           </div>
-        )}
+        </div>
 
-        {/* =================================================
-            SPEECH → SIGN
-        ================================================= */}
+        {/* Main translator */}
 
-        {mode === "speech-to-sign" && (
-          <div className="direction-card">
+        <div className="translator-grid">
 
-            <div className="direction-card-header">
+          {/* Camera */}
 
+          <div className="translator-card">
+
+            <div className="card-header">
               <div>
-                <span className="card-label">
-                  VOICE INPUT
-                </span>
+                <h2>
+                  Camera Input
+                </h2>
 
-                <h3>
-                  Speech → Sign Language
-                </h3>
+                <p>
+                  Position your hand clearly
+                  inside the camera frame.
+                </p>
               </div>
-
-              <span className="direction-icon">
-                🎤
-              </span>
-
             </div>
 
-            <p className="direction-description">
-              Speak into your microphone and convert
-              your speech into a sign-language
-              representation.
-            </p>
+            <div className="camera-box">
 
-            {/* SPEECH BUTTON */}
-            <div className="speech-controls">
+              <video
+                ref={videoRef}
+                className="camera-video"
+                autoPlay
+                muted
+                playsInline
+              />
 
-              {!isListening ? (
-                <button
-                  type="button"
-                  className="camera-button"
-                  onClick={startSpeechRecognition}
-                >
-                  <span>🎤</span>
-                  Start Listening
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className="camera-button stop listening"
-                  onClick={stopSpeechRecognition}
-                >
-                  <span>⏹</span>
-                  Stop Listening
-                </button>
+              {!cameraStarted && (
+                <div className="camera-placeholder">
+
+                  <div className="camera-placeholder-icon">
+                    ◎
+                  </div>
+
+                  <h3>
+                    Camera is off
+                  </h3>
+
+                  <p>
+                    Start the camera to begin
+                    sign detection.
+                  </p>
+
+                </div>
               )}
 
-              <button
-                type="button"
-                className="secondary-button"
-                onClick={clearSpeech}
-              >
-                Clear
-              </button>
+              {cameraStarted && (
+                <div className="camera-overlay">
+                  <span>
+                    AI detection active
+                  </span>
+                </div>
+              )}
 
             </div>
 
-            {/* SPEECH ERROR */}
-            {speechError && (
-              <div className="camera-error">
-
-                <span>⚠️</span>
-
-                <p>{speechError}</p>
-
-              </div>
+            {cameraError && (
+              <p className="camera-error">
+                {cameraError}
+              </p>
             )}
 
-            {/* SPEECH RESULT */}
-            <div className="speech-result-box">
+            <div className="camera-controls">
 
-              <div className="result-header">
-                <span>
-                  Recognized Speech
-                </span>
-
-                <span className="result-icon">
-                  🎤
-                </span>
-              </div>
-
-              {speechText ? (
-                <div className="speech-text">
-                  {speechText}
-                </div>
+              {!cameraStarted ? (
+                <button
+                  className="primary-btn"
+                  onClick={startCamera}
+                >
+                  Start Camera
+                </button>
               ) : (
-                <div className="speech-text empty">
-                  Your recognized speech will
-                  appear here.
-                </div>
+                <button
+                  className="secondary-btn"
+                  onClick={stopCamera}
+                >
+                  Stop Camera
+                </button>
               )}
 
             </div>
 
-            {/* SIGN OUTPUT */}
-            <div className="sign-output-box">
+          </div>
 
-              <div className="result-header">
-                <span>
-                  Sign Language Output
-                </span>
+          {/* Translation result */}
 
-                <span className="result-icon">
-                  🤟
-                </span>
+          <div className="translator-card result-card">
+
+            <div className="card-header">
+
+              <div>
+                <h2>
+                  Translation Result
+                </h2>
+
+                <p>
+                  AI recognition from your
+                  camera.
+                </p>
               </div>
 
-              {speechText ? (
-                <div className="sign-output">
-                  {speechText
-                    .toLowerCase()
-                    .split(/\s+/)
-                    .filter(Boolean)
-                    .map((word) => `[${word}]`)
-                    .join(" ")}
-                </div>
-              ) : (
-                <div className="sign-output empty">
-                  Sign-language output will appear
-                  after speech recognition.
-                </div>
-              )}
+            </div>
+
+            <div className="result-section">
+
+              <span className="result-label">
+                DETECTED SIGN
+              </span>
+
+              <div className="detected-sign">
+                {detectedSign}
+              </div>
 
             </div>
 
-            {/* INFORMATION */}
-            <div className="demo-note">
-              ℹ️ Speech recognition uses your browser's
-              available speech-recognition capability.
-              The actual sign-generation model will be
-              connected later.
+            <div className="result-section">
+
+              <span className="result-label">
+                TRANSLATION
+              </span>
+
+              <div className="translation-output">
+                {translation}
+              </div>
+
             </div>
 
-          </div>
-        )}
+            <div className="result-status">
 
-        {/* =================================================
-            INFO
-        ================================================= */}
+              <span
+                className={
+                  cameraStarted
+                    ? "status-dot active"
+                    : "status-dot"
+                }
+              />
 
-        <div className="translator-info">
+              <span>
+                {status}
+              </span>
 
-          <div className="info-item">
-
-            <span>🔒</span>
-
-            <div>
-              <strong>Private</strong>
-
-              <p>
-                Camera access stays in your browser.
-              </p>
-            </div>
-
-          </div>
-
-          <div className="info-item">
-
-            <span>🤖</span>
-
-            <div>
-              <strong>AI Ready</strong>
-
-              <p>
-                Ready for gesture recognition
-                integration.
-              </p>
-            </div>
-
-          </div>
-
-          <div className="info-item">
-
-            <span>⚡</span>
-
-            <div>
-              <strong>Real Time</strong>
-
-              <p>
-                Designed for real-time
-                sign detection.
-              </p>
             </div>
 
           </div>
 
         </div>
-
       </div>
     </section>
   );
