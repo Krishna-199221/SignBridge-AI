@@ -1,217 +1,260 @@
+
+import { Link } from "react-router-dom";
+
+const features = [
+  {
+    icon: "🛡️",
+    title: "Accessible",
+    description:
+      "Designed to help bridge communication gaps for the deaf and hard-of-hearing community.",
+    color: "orange",
+  },
+  {
+    icon: "🧠",
+    title: "AI Powered",
+    description:
+      "Uses machine learning for sign recognition and translation.",
+    color: "pink",
+  },
+  {
+    icon: "♡",
+    title: "Inclusive",
+    description:
+      "Built to support more connected and understanding communication.",
+    color: "orange",
+  },
+  {
+    icon: "🌱",
+    title: "Open Source Inspired",
+    description:
+      "Built with accessible tools and open-source technologies.",
+    color: "green",
+  },
+];
+
 function Home() {
   return (
-    <>
-      {/* =========================
-          HERO
-      ========================== */}
-      <section className="hero">
-        <div className="hero-container">
-          <div className="hero-content">
-            <p className="eyebrow">
-              AI-POWERED SIGN LANGUAGE COMMUNICATION
-            </p>
+    <main className="home-dashboard">
+      {/* WIDE HERO BANNER */}
+      <section className="dashboard-hero">
+        <div className="dashboard-hero-copy">
+          <p className="dashboard-eyebrow">
+            TECHNOLOGY THAT CONNECTS PEOPLE
+          </p>
 
-            <h1>
-              Breaking
-              <span> Communication </span>
-              Barriers
-            </h1>
+          <h1>
+            Indian <span className="word-orange">Sign</span>{" "}
+            <span className="word-green">Language</span>
+            <br />
+            Converter
+          </h1>
 
-            <p className="hero-description">
-              SignBridge-AI uses artificial intelligence to help bridge
-              communication across sign language, text, and speech.
-            </p>
+          <p className="dashboard-hero-description">
+            Convert between Sign, Text and Speech using Indian Sign
+            Language (ISL).
+          </p>
 
-            <div className="hero-buttons">
-              <a className="primary-button" href="/translator">
-                🤟 Start Translating
-                <span>→</span>
-              </a>
+          <p className="dashboard-hero-subtitle">
+            Bridging communication gaps, one sign at a time.
+          </p>
+        </div>
 
-              <a className="secondary-button" href="/how-it-works">
-                Learn More
-              </a>
-            </div>
+        <div
+          className="dashboard-hero-art"
+          role="img"
+          aria-label="Illustration representing sign language communication"
+        >
+          <div className="hero-art-shape shape-one" />
+          <div className="hero-art-shape shape-two" />
+          <div className="hero-art-shape shape-three" />
+          <div className="hero-art-emoji">🤟</div>
 
-            <div className="hero-status">
-              <div className="hero-status-item">
-                <span className="status-icon">🤟</span>
-
-                <div>
-                  <strong>Communication</strong>
-                  <span>3 Modes</span>
-                </div>
-              </div>
-
-              <div className="status-arrow">→</div>
-
-              <div className="hero-status-item">
-                <div>
-                  <strong>Translation</strong>
-                  <span>Sign • Text • Speech</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* =========================
-              HERO VISUAL
-          ========================== */}
-          <div className="hero-visual">
-            <div className="hero-glow"></div>
-
-            <div className="hero-card">
-              <div className="hero-card-header">
-                <div className="hero-card-brand">
-                  <span className="live-dot"></span>
-                  <span>SignBridge-AI</span>
-                </div>
-
-                <span className="hero-card-menu">•••</span>
-              </div>
-
-              <div className="hero-camera">
-                <div className="hero-camera-icon">📷</div>
-                <strong>AI Translator</strong>
-                <small>Ready for communication</small>
-              </div>
-
-              <div className="hero-card-footer">
-                <div>
-                  <small>COMMUNICATION MODES</small>
-                  <strong>3 Available</strong>
-                </div>
-
-                <div>
-                  <small>TRANSLATION</small>
-                  <strong>Ready</strong>
-                </div>
-              </div>
-            </div>
+          <div className="hero-art-note">
+            Sign
+            <br />
+            Learn
+            <br />
+            <span>Include ♡</span>
           </div>
         </div>
       </section>
 
-      {/* =========================
-          HOW IT WORKS PREVIEW
-      ========================== */}
-      <section className="how-section">
-        <div className="section-container">
-          <div className="section-heading">
-            <p className="eyebrow">SIMPLE & POWERFUL</p>
+      {/* THREE TRANSLATION MODES */}
+      <section
+        className="dashboard-modes"
+        aria-label="Translation modes"
+      >
+        {/* SIGN TO TEXT */}
+        <article className="dashboard-mode-card sign-mode">
+          <div className="dashboard-mode-heading">
+            <div className="dashboard-mode-icon">🤟</div>
 
-            <h2>How SignBridge-AI Works</h2>
-
-            <p>
-              Choose a communication direction, provide your input, and let
-              SignBridge-AI translate it.
-            </p>
+            <div>
+              <h2>Sign to Text</h2>
+              <p>
+                Use your camera to convert supported ISL signs into text.
+              </p>
+            </div>
           </div>
 
-          <div className="steps">
-            <article className="step-card">
-              <div className="step-icon">🔄</div>
-              <div className="step-number">01</div>
-
-              <h3>Choose Direction</h3>
-
-              <p>
-                Select Sign → Text, Text → Sign, or Speech → Sign based on
-                how you want to communicate.
-              </p>
-            </article>
-
-            <article className="step-card">
-              <div className="step-icon">📥</div>
-              <div className="step-number">02</div>
-
-              <h3>Provide Input</h3>
-
-              <p>
-                Use your camera, enter text, or speak through your microphone
-                to provide the communication input.
-              </p>
-            </article>
-
-            <article className="step-card">
-              <div className="step-icon">💬</div>
-              <div className="step-number">03</div>
-
-              <h3>Translate</h3>
-
-              <p>
-                SignBridge-AI processes the selected input and provides the
-                corresponding communication output.
-              </p>
-            </article>
+          <div className="mode-preview sign-preview">
+            <div className="preview-camera-icon">◎</div>
+            <strong>Live Sign Recognition</strong>
+            <span>
+              Start your camera to recognize supported signs.
+            </span>
           </div>
-        </div>
-      </section>
 
-      {/* =========================
-          ABOUT PREVIEW
-      ========================== */}
-      <section className="about-section">
-        <div className="section-container">
-          <div className="about-content">
-            <p className="eyebrow">OUR MISSION</p>
+          <div className="mode-action-row">
+            <Link
+              className="dashboard-action action-orange"
+              to="/translator"
+            >
+              <span>▧</span> Open Camera Translator
+            </Link>
+          </div>
 
-            <h2>Technology that connects people.</h2>
+          <div className="mode-output sign-output-preview">
+            <div className="mode-output-heading">
+              <span>▤</span> Detected Text
+            </div>
+            <div className="mode-output-value">
+              Your recognized sign will appear here.
+            </div>
+          </div>
+        </article>
 
-            <p className="about-description">
-              SignBridge-AI is being built to make communication more
-              accessible by combining artificial intelligence with a simple
-              user experience across sign, text, and speech.
-            </p>
+        {/* TEXT TO SIGN */}
+        <article className="dashboard-mode-card text-mode">
+          <div className="dashboard-mode-heading">
+            <div className="dashboard-mode-icon">T →</div>
 
-            <div className="about-features">
-              <div className="about-feature">
-                <span>🤖</span>
+            <div>
+              <h2>Text to Sign</h2>
+              <p>
+                Enter a word or sentence to find its available sign
+                animations.
+              </p>
+            </div>
+          </div>
 
-                <div>
-                  <h3>AI Powered</h3>
+          <div className="mode-preview text-preview">
+            <div className="preview-text-icon">T →</div>
+            <strong>Text-based Translation</strong>
+            <span>
+              Enter text and view the available sign video results.
+            </span>
+          </div>
 
-                  <p>
-                    AI-assisted communication across sign, text, and speech
-                    input modes.
-                  </p>
-                </div>
-              </div>
+          <div className="mode-action-row">
+            <Link
+              className="dashboard-action action-green"
+              to="/translator?mode=text-to-sign"
+            >
+              <span>▶</span> Open Text to Sign
+            </Link>
+          </div>
 
-              <div className="about-feature">
-                <span>🌐</span>
+          <div className="mode-output text-output-preview">
+            <div className="mode-output-heading">
+              <span>◷</span> Sign Video Output
+            </div>
+            <div className="mode-output-value">
+              Your available sign animations will appear in the translator.
+            </div>
+          </div>
+        </article>
 
-                <div>
-                  <h3>Accessible</h3>
+        {/* SPEECH TO SIGN */}
+        <article className="dashboard-mode-card speech-mode">
+          <div className="dashboard-mode-heading">
+            <div className="dashboard-mode-icon">🎙</div>
 
-                  <p>
-                    A simple interface designed to support different ways
-                    of communicating.
-                  </p>
-                </div>
-              </div>
+            <div>
+              <h2>Speech to Sign</h2>
+              <p>
+                Explore speech-based communication through the planned
+                speech-to-sign feature.
+              </p>
+            </div>
+          </div>
 
-              <div className="about-feature">
-                <span>⚡</span>
+          <div className="mode-preview speech-preview">
+            <div className="speech-mic-icon">🎙</div>
+            <strong>Speech Input</strong>
 
-                <div>
-                  <h3>Real Time</h3>
-
-                  <p>
-                    Camera and speech-based interaction designed for
-                    responsive communication.
-                  </p>
-                </div>
-              </div>
+            <div className="speech-wave" aria-hidden="true">
+              {Array.from({ length: 29 }, (_, index) => (
+                <span
+                  key={index}
+                  style={{
+                    height: `${10 + ((index * 17) % 25)}px`,
+                  }}
+                />
+              ))}
             </div>
 
-            <a className="secondary-button" href="/about">
-              Learn More About Us
-            </a>
+            <span>Speech-to-Sign is under development.</span>
           </div>
-        </div>
+
+          <div className="mode-action-row">
+            <button
+              className="dashboard-action action-blue"
+              type="button"
+              onClick={() =>
+                document
+                  .getElementById("speech-prototype-note")
+                  ?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                  })
+              }
+            >
+              <span>ⓘ</span> View Feature Status
+            </button>
+          </div>
+
+          <div
+            className="mode-output speech-output-preview"
+            id="speech-prototype-note"
+          >
+            <div className="mode-output-heading">
+              <span>ⓘ</span> Prototype Status
+            </div>
+            <div className="mode-output-value">
+              This mode is planned; live speech-to-sign translation is
+              not connected yet.
+            </div>
+          </div>
+        </article>
       </section>
-    </>
+
+      {/* FEATURE STRIP */}
+      <section className="dashboard-features" aria-label="Project values">
+        {features.map((feature) => (
+          <article
+            className={`dashboard-feature feature-${feature.color}`}
+            key={feature.title}
+          >
+            <div className="dashboard-feature-icon">
+              {feature.icon}
+            </div>
+
+            <div>
+              <h3>{feature.title}</h3>
+              <p>{feature.description}</p>
+            </div>
+          </article>
+        ))}
+      </section>
+
+      {/* FOOTER DECORATION */}
+      <div className="dashboard-closing">
+        <span className="closing-line" />
+        <p>♥ &nbsp; Because every voice matters &nbsp; ♥</p>
+        <span className="closing-line" />
+      </div>
+    </main>
   );
 }
 
