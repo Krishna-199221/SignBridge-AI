@@ -1,8 +1,7 @@
 
 import { useState } from "react";
 
-const API_URL = "http://127.0.0.1:8000/translate";
-const ASSET_URL = "http://127.0.0.1:8000";
+const API_URL = "/api/translate";
 
 function TextToSign() {
   const [text, setText] = useState("");
@@ -86,7 +85,7 @@ function TextToSign() {
 
                 {sign.sign_found && sign.sign_asset ? (
                   <img
-                    src={`${ASSET_URL}${sign.sign_asset}`}
+                    src={sign.sign_asset}
                     alt={`Indian Sign Language animation for ${sign.text}`}
                     className="sign-animation"
                   />

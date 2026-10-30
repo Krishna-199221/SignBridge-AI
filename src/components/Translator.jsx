@@ -1,7 +1,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const API_URL = "http://127.0.0.1:5000/predict";
+const API_URL = "/api/predict";
 const FRAME_INTERVAL = 500;
 const REQUEST_TIMEOUT = 8000;
 
@@ -118,7 +118,14 @@ function Translator() {
       });
 
       if (!response.ok) {
-        throw new Error(`AI backend returned HTTP ${response.status}.`);
+        const errorData = await response.json().catch(() => ({}));
+        if (response.status === 503 && intervalRef.current) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+        }
+        throw new Error(
+          errorData.detail || `AI backend returned HTTP ${response.status}.`
+        );
       }
 
       const data = await response.json();
@@ -155,7 +162,7 @@ function Translator() {
         setStatus("Recognition error");
         setCameraError(
           error.message ||
-            "Cannot connect to the AI backend. Check that Flask is running."
+            "Cannot connect to the FastAPI sign-recognition service."
         );
       }
     } finally {
